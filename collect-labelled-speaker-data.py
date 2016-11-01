@@ -6,7 +6,7 @@ Assignment A3 : Data Collection
 
 @author: cs390mb
 
-This Python script receives incoming labelled audio data through 
+This Python script receives incoming labelled audio data through
 the server and saves it in .csv format to disk.
 
 """
@@ -18,13 +18,22 @@ import numpy as np
 import os
 
 # TODO: Replace the string with your user ID
-user_id = ""
+user_id = "be.af.9a.d0.e9.3f.e3.db.8f.94"
 
-# TODO: Change the filename of the output file.
-# You should keep it in the format "speaker-data-<speaker>-#.csv"
-filename="speaker-data-HenryVIII-1.csv"
+# TODO: Uncomment the line that contains your name
+# If you're doing more than 1 collection session, ensure you increment
+# the int value each time
+# Aaron:
+filename = "speaker-data-aaron-1.csv"
+# Todd:
+#       filename = "speaker-data-todd-1.csv"
+# Dan:
+#       filename = "speaker-data-dan-1.csv"
 
 # TODO: Change the label to match the speaker; it must be numeric
+# Aaron: 0
+# Todd: 1
+# Dan: 2
 label = 0
 
 data_dir = "data"
@@ -34,12 +43,12 @@ if not os.path.exists(data_dir):
 
 '''
     This socket is used to send data back through the data collection server.
-    It is used to complete the authentication. It may also be used to send 
-    data or notifications back to the phone, but we will not be using that 
+    It is used to complete the authentication. It may also be used to send
+    data or notifications back to the phone, but we will not be using that
     functionality in this assignment.
 '''
 send_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-send_socket.connect(("none.cs.umass.edu", 9999))    
+send_socket.connect(("none.cs.umass.edu", 9999))
 
 #################   Server Connection Code  ####################
 
@@ -58,7 +67,7 @@ msg_acknowledge_id = "ACK"
 def authenticate(sock):
     """
     Authenticates the user by performing a handshake with the data collection server.
-    
+
     If it fails, it will raise an appropriate exception.
     """
     message = sock.recv(256).strip()
@@ -75,13 +84,13 @@ def authenticate(sock):
     except:
         print("Authentication failed!")
         raise Exception("Wait timed out. Failed to receive authentication response from server.")
-        
+
     if (message.startswith(msg_acknowledge_id)):
         ack_id = message.split(",")[1]
     else:
         print("Authentication failed!")
         raise Exception("Expected message with prefix '{}' from server, received {}".format(msg_acknowledge_id, message))
-    
+
     if (ack_id == user_id):
         print("Authentication successful.")
         sys.stdout.flush()
@@ -94,18 +103,18 @@ try:
     print("Authenticating user for receiving data...")
     sys.stdout.flush()
     authenticate(receive_socket)
-    
+
     print("Authenticating user for sending data...")
     sys.stdout.flush()
     authenticate(send_socket)
-    
+
     print("Successfully connected to the server! Waiting for incoming data...")
     sys.stdout.flush()
-        
+
     previous_json = ''
-    
+
     labelled_data = []
-        
+
     while True:
         try:
             message = receive_socket.recv(1024).strip()
@@ -122,14 +131,14 @@ try:
                 if (sensor_type == u"SENSOR_AUDIO"):
                     t = data['data']['t']
                     audio_buffer=data['data']['values']
-                    print("Received audio data of length {}".format(len(audio_buffer)))                    
+                    print("Received audio data of length {}".format(len(audio_buffer)))
                     labelled_instance = [t]
                     labelled_instance.extend(audio_buffer)
                     labelled_instance.append(label)
                     labelled_data.append(labelled_instance)
-                    
+
             sys.stdout.flush()
-        except KeyboardInterrupt: 
+        except KeyboardInterrupt:
             # occurs when the user presses Ctrl-C
             print("User Interrupt. Quitting...")
             raise KeyboardInterrupt
@@ -138,10 +147,10 @@ try:
             # ignore exceptions, such as parsing the json
             # if a connection timeout occurs, also ignore and try again. Use Ctrl-C to stop
             # but make sure the error is displayed so we know what's going on
-            if (e.message != "timed out"):  # ignore timeout exceptions completely       
+            if (e.message != "timed out"):  # ignore timeout exceptions completely
                 print(e)
             pass
-except KeyboardInterrupt: 
+except KeyboardInterrupt:
     # occurs when the user presses Ctrl-C
     print("User Interrupt. Saving labelled data...")
     labelled_data = np.asarray(labelled_data)
@@ -151,7 +160,7 @@ finally:
     print >>sys.stderr, 'closing socket for receiving data'
     receive_socket.shutdown(socket.SHUT_RDWR)
     receive_socket.close()
-    
+
     print >>sys.stderr, 'closing socket for sending data'
     send_socket.shutdown(socket.SHUT_RDWR)
     send_socket.close()
