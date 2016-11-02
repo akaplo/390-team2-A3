@@ -24,17 +24,21 @@ user_id = "be.af.9a.d0.e9.3f.e3.db.8f.94"
 # If you're doing more than 1 collection session, ensure you increment
 # the int value each time
 # Aaron:
-filename = "speaker-data-aaron-1.csv"
+#       filename = "speaker-data-aaron-1.csv"
 # Todd:
 #       filename = "speaker-data-todd-1.csv"
 # Dan:
 #       filename = "speaker-data-dan-1.csv"
+# No speaker:
+#       filename = "speaker-data-no-speaker-1.csv"
+
 
 # TODO: Change the label to match the speaker; it must be numeric
 # Aaron: 0
 # Todd: 1
 # Dan: 2
-label = 0
+# No speaker: 3
+label = 3
 
 data_dir = "data"
 
