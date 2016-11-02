@@ -30,7 +30,7 @@ user_id = "be.af.9a.d0.e9.3f.e3.db.8f.94"
 # Dan:
 #       filename = "speaker-data-dan-1.csv"
 # No speaker:
-#       filename = "speaker-data-no-speaker-1.csv"
+filename = "speaker-data-no-speaker-1.csv"
 
 
 # TODO: Change the label to match the speaker; it must be numeric
