@@ -117,31 +117,43 @@ n = len(y)
 n_classes = len(class_names)
 
 # TODO: Train your classifier!
+
+# This is all of the actual labels for the classes
 class_labels = list(set(y))
 
+# Create a classifier
 clf = KNeighborsClassifier(n_classes)
 
+# Create a cross validation
 cv = cross_validation.KFold(n, n_folds=10, shuffle=True, random_state=None)
 
+# Initialize lists that will take the accuracy, precision, and recall for each fold
 accuracyList = []
 precisionList = []
 recallList = []
 
+# Loop through the folds (OK to use a for loop here)
 for i, (train_indexes, test_indexes) in enumerate(cv):
     print("Fold {}".format(i))
 
+    # Train on the training data
     clf.fit(X[train_indexes], y[train_indexes])
+
+    # Generate a confusion matrix for the test data
     conf = confusion_matrix(clf.predict(X[test_indexes]), y[test_indexes], labels=class_labels)
+
+    # Compute accuracy, precision, and recall and append to respective lists
 
     accuracy = sum(sum(np.multiply(conf, np.eye(n_classes)))) / sum(sum(conf))
     accuracyList += [accuracy]
 
     precision = [conf[i, i] / sum(conf[:, i]) for i in range(0, n_classes)]
     precisionList += [precision]
-    print precision
 
     recall = [conf[i, i] / sum(conf[i, :]) for i in range(0, n_classes)]
     recallList += [recall]
+
+# Compute average accuracy, precision, and recall
 
 print "average accuracy:"
 print np.nanmean(accuracyList)
