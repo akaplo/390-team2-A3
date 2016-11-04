@@ -124,7 +124,7 @@ class FeatureExtractor():
         """
 
         # Get the frequencies and bandwidths from the formants
-        freqs, bandwidths = self._compute_formants(self, window)
+        freqs, bandwidths = self._compute_formants(window)
 
         # Make a histogram with the default number of bins from the frequency data
         hist = np.histogram(freqs, bins=10)[0]
@@ -182,7 +182,7 @@ class FeatureExtractor():
         """
 
         # Get the pitch contours and confidence curve from the contour
-        pitch_contour, confidence_curve = self._compute_pitch_contour(self, window)
+        pitch_contour, confidence_curve = self._compute_pitch_contour(window)
 
         # Make a histogram from the contours with the default number of bins
         hist = np.histogram(pitch_contour, bins=10)[0]
@@ -232,7 +232,7 @@ class FeatureExtractor():
         """
 
         # Compute the mfcc features for the window
-        mfcc = _compute_mfcc(window)
+        mfcc = self._compute_mfcc(window)
 
         # Compute the numerator of the delta coefficient equation
         numerator = [np.sum([(i * (mfcc[t + i,:] - mfcc[t - i, :])) for i in range(0, n + 1)], axis=0) for t in range(0 + n, len(mfcc) - n)]
