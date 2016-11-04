@@ -126,10 +126,10 @@ class FeatureExtractor():
         # compute a histogram of the audio formants contained in the window of audio
         # data that we're given.  Do this as many times as the window is large,
         # this making len(window) bins.  The feature vector is the array(?)
-        hists = [np.histogram(self._compute_formants(self, window))[0] for i in range(0, np.size(window, 1))]
+        freqs, bandwidths = self._compute_formants(self, window)
+        hist = np.histogram(freqs)[0]
 
-        # TODO how to get (frequencies, bandwidths) from the histogram to return them?
-        return [1] # returns dummy value; replace this with the features you extract
+        return hist
 
     def _compute_pitch_contour(self, window):
         """
@@ -179,7 +179,11 @@ class FeatureExtractor():
 
         You may also want to return the average pitch and standard deviation.
         """
-        return [1] # returns dummy value; replace this with the features you extract
+
+        pitch_contour, confidence_curve = self._compute_formants(self, window)
+        hist = np.histogram(pitch_contour)[0]
+
+        return hist
 
     def _compute_mfcc(self, window):
         """
@@ -217,7 +221,52 @@ class FeatureExtractor():
         See section "Deltas and Delta-Deltas" at http://practicalcryptography.com/miscellaneous/machine-learning/guide-mel-frequency-cepstral-coefficients-mfccs/.
 
         """
-        return [1] # returns dummy value; replace this with the features you extract
+        mfcc = _compute_mfcc(window)
+        numerator = [np.sum([(i * (mfcc[t + i,:] - mfcc[t - i, :])) for i in range(0, n + 1)], axis=0) for t in range(0 + n, len(mfcc) - n)]
+        denominator = (2 * np.sum(np.array(range(1, n + 1)) ** 2))
+        return numerator / denominator
+
+# This is a janky thing I did to debug this will be deleted
+"""
+import os
+import sys
+data_dir = 'data'
+class_names = []
+data = np.zeros((0,8002)) #8002 = 1 (timestamp) + 8000 (for 8kHz audio data) + 1 (label)
+
+for filename in os.listdir(data_dir):
+    if filename.endswith(".csv") and filename.startswith("speaker-data"):
+        filename_components = filename.split("-") # split by the '-' character
+        speaker = filename_components[2]
+        print("Loading data for {}.".format(speaker))
+        if speaker not in class_names:
+            class_names.append(speaker)
+        speaker_label = class_names.index(speaker)
+        sys.stdout.flush()
+        data_file = os.path.join('data', filename)
+        data_for_current_speaker = np.genfromtxt(data_file, delimiter=',')
+        print("Loaded {} raw labelled audio data samples.".format(len(data_for_current_speaker)))
+        sys.stdout.flush()
+        data = np.append(data, data_for_current_speaker, axis=0)
+
+def compute_mfcc(window):
+    mfccs = mfcc(window,8000,winstep=.0125)
+    return mfccs
+
+def compute_delta_coefficients(window, n=2):
+    mfcc = compute_mfcc(window)
+    numerator = [np.sum([(i * (mfcc[t + i,:] - mfcc[t - i, :])) for i in range(0, n + 1)], axis=0) for t in range(0 + n, len(mfcc) - n)]
+    denominator = (2 * np.sum(np.array(range(1, n + 1)) ** 2))
+    return numerator / denominator
+
+for i,window_with_timestamp_and_label in enumerate(data):
+    window = window_with_timestamp_and_label[1:-1] # get window without timestamp/label
+    label = data[i,-1] # get label
+    if(i == 0):
+        print np.shape(compute_mfcc(window))
+        print np.shape(compute_delta_coefficients(window))
+"""
+
 
     def _recognize_speech(window):
         """
