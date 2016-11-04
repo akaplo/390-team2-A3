@@ -13,6 +13,7 @@ from the raw data and trains and evaluates a classifier to identify
 the speaker.
 
 """
+from __future__ import division
 
 import os
 import sys
@@ -28,6 +29,9 @@ from features import FeatureExtractor
 from sklearn import cross_validation
 from sklearn.metrics import confusion_matrix
 import pickle
+
+# The NearestNeighbors import is for unsupervised this is the classifier
+from sklearn.neighbors import KNeighborsClassifier
 
 
 # %%---------------------------------------------------------------------------
@@ -75,7 +79,7 @@ print("Found data for {} speakers : {}".format(len(class_names), ", ".join(class
 
 # You may need to change n_features depending on how you compute your features
 # we have it set to 3 to match the dummy values we return in the starter code.
-n_features = 3
+n_features = 997
 
 print("Extracting features and labels for {} audio windows...".format(data.shape[0]))
 sys.stdout.flush()
@@ -113,9 +117,43 @@ n = len(y)
 n_classes = len(class_names)
 
 # TODO: Train your classifier!
+class_labels = list(set(y))
+
+clf = KNeighborsClassifier(n_classes)
+
+cv = cross_validation.KFold(n, n_folds=10, shuffle=True, random_state=None)
+
+accuracyList = []
+precisionList = []
+recallList = []
+
+for i, (train_indexes, test_indexes) in enumerate(cv):
+    print("Fold {}".format(i))
+
+    clf.fit(X[train_indexes], y[train_indexes])
+    conf = confusion_matrix(clf.predict(X[test_indexes]), y[test_indexes], labels=class_labels)
+
+    accuracy = sum(sum(np.multiply(conf, np.eye(n_classes)))) / sum(sum(conf))
+    accuracyList += [accuracy]
+
+    precision = [conf[i, i] / sum(conf[:, i]) for i in range(0, n_classes)]
+    precisionList += [precision]
+    print precision
+
+    recall = [conf[i, i] / sum(conf[i, :]) for i in range(0, n_classes)]
+    recallList += [recall]
+
+print "average accuracy:"
+print np.nanmean(accuracyList)
+
+print "average precision:"
+print np.nanmean(precisionList, axis=0)
+
+print "average recall:"
+print np.nanmean(recallList, axis=0)
 
 # TODO: set your best classifier below, then uncomment the following line to train it on ALL the data:
-best_classifier = None
+best_classifier = clf
 # best_classifier.fit(X,y)
 
 classifier_filename='classifier.pickle'
