@@ -123,13 +123,14 @@ class FeatureExtractor():
         This will give you a feature vector of length len(bins).
         """
 
-        # compute a histogram of the audio formants contained in the window of audio
-        # data that we're given.  Do this as many times as the window is large,
-        # this making len(window) bins.  The feature vector is the array(?)
-        hists = [np.histogram(self._compute_formants(self, window))[0] for i in range(0, np.size(window, 1))]
+        # Get the frequencies and bandwidths from the formants
+        freqs, bandwidths = self._compute_formants(window)
 
-        # TODO how to get (frequencies, bandwidths) from the histogram to return them?
-        return [1] # returns dummy value; replace this with the features you extract
+        # Make a histogram with the default number of bins from the frequency data
+        hist = np.histogram(freqs, bins=10)[0]
+
+        # Return the histogram
+        return hist
 
     def _compute_pitch_contour(self, window):
         """
@@ -179,7 +180,19 @@ class FeatureExtractor():
 
         You may also want to return the average pitch and standard deviation.
         """
-        return [1] # returns dummy value; replace this with the features you extract
+
+        # Get the pitch contours and confidence curve from the contour
+        pitch_contour, confidence_curve = self._compute_pitch_contour(window)
+
+        # Make a histogram from the contours with the default number of bins
+        hist = np.histogram(pitch_contour, bins=10)[0]
+
+        # Compute the mean and standard deviation of pitch contours
+        mean = np.mean(pitch_contour)
+        std = np.std(pitch_contour)
+
+        # Return the histogram followed by the mean and standard deviation
+        return np.append(hist, [mean, std])
 
     def _compute_mfcc(self, window):
         """
@@ -217,7 +230,19 @@ class FeatureExtractor():
         See section "Deltas and Delta-Deltas" at http://practicalcryptography.com/miscellaneous/machine-learning/guide-mel-frequency-cepstral-coefficients-mfccs/.
 
         """
-        return [1] # returns dummy value; replace this with the features you extract
+
+        # Compute the mfcc features for the window
+        mfcc = self._compute_mfcc(window)
+
+        # Compute the numerator of the delta coefficient equation
+        numerator = [np.sum([(i * (mfcc[t + i,:] - mfcc[t - i, :])) for i in range(0, n + 1)], axis=0) for t in range(0 + n, len(mfcc) - n)]
+
+        # Compute the denominator of the delta coefficient equation
+        denominator = (2 * np.sum(np.array(range(1, n + 1)) ** 2))
+
+        # Return the numerator (a matrix) divided by the denominator (a constant)
+        return numerator / denominator
+
 
     def _recognize_speech(window):
         """
