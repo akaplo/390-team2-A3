@@ -30,7 +30,7 @@ user_id = "be.af.9a.d0.e9.3f.e3.db.8f.94"
 # Dan:
 #       filename = "speaker-data-dan-1.csv"
 # No speaker:
-filename = "speaker-data-aaron-2.csv"
+filename = "speaker-data-dan-1.csv"
 
 
 # TODO: Change the label to match the speaker; it must be numeric
@@ -38,7 +38,7 @@ filename = "speaker-data-aaron-2.csv"
 # Todd: 1
 # Dan: 2
 # No speaker: 3
-label = 0
+label = 2
 
 data_dir = "data"
 
