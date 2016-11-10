@@ -243,6 +243,18 @@ class FeatureExtractor():
         # Return the numerator (a matrix) divided by the denominator (a constant)
         return numerator / denominator
 
+    def _compute_delta_delta_coefficients(self, window, n=2):
+        # Compute the mfcc features for the window
+        delta = self._compute_delta_coefficients(window)
+
+        # Compute the numerator of the delta coefficient equation
+        numerator = [np.sum([(i * (delta[t + i,:] - delta[t - i, :])) for i in range(0, n + 1)], axis=0) for t in range(0 + n, len(delta) - n)]
+
+        # Compute the denominator of the delta coefficient equation
+        denominator = (2 * np.sum(np.array(range(1, n + 1)) ** 2))
+
+        # Return the numerator (a matrix) divided by the denominator (a constant)
+        return numerator / denominator
 
     def _recognize_speech(window):
         """
@@ -332,5 +344,7 @@ class FeatureExtractor():
         x = np.append(x, self._compute_formant_features(window))
         x = np.append(x, self._compute_pitch_features(window))
         x = np.append(x, self._compute_delta_coefficients(window))
+        # It turns out the delta-deltas made things worse but this is how they would have been used
+        # x = np.append(x, self._compute_delta_delta_coefficients(window))
 
         return x

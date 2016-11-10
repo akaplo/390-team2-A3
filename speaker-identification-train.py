@@ -13,6 +13,7 @@ from the raw data and trains and evaluates a classifier to identify
 the speaker.
 
 """
+# Makes float division default
 from __future__ import division
 
 import os
@@ -30,9 +31,11 @@ from sklearn import cross_validation
 from sklearn.metrics import confusion_matrix
 import pickle
 
-# The NearestNeighbors import is for unsupervised this is the classifier
-from sklearn.neighbors import KNeighborsClassifier
+# I prefer train test split to kfold
+from sklearn.cross_validation import train_test_split
 
+# Needed for preprocessing
+from sklearn import preprocessing
 
 # %%---------------------------------------------------------------------------
 #
@@ -116,59 +119,61 @@ sys.stdout.flush()
 n = len(y)
 n_classes = len(class_names)
 
-# TODO: Train your classifier!
-
-# This is all of the actual labels for the classes
+# This is all of the actual labels for the classes, needed for confusion matrix
 class_labels = list(set(y))
 
-# Create a classifier
-clf = KNeighborsClassifier(n_classes)
+# Split the data into a training set and a test set (evaluation set, hence val)
+X_t, X_val, y_t, y_val = train_test_split(X, y, test_size=0.33, random_state=42)
 
-# Create a cross validation
-cv = cross_validation.KFold(n, n_folds=10, shuffle=True, random_state=None)
+# Create a scaler
+scaler = preprocessing.StandardScaler().fit(X_t)
 
-# Initialize lists that will take the accuracy, precision, and recall for each fold
-accuracyList = []
-precisionList = []
-recallList = []
+# Scale both data sets
+X_t = scaler.transform(X_t)
+X_val = scaler.transform(X_val)
 
-# Loop through the folds (OK to use a for loop here)
-for i, (train_indexes, test_indexes) in enumerate(cv):
-    print("Fold {}".format(i))
+# This is how the best classifier was selected
+"""
+fits = []
 
-    # Train on the training data
-    clf.fit(X[train_indexes], y[train_indexes])
+for max_feature in [100, 500, 900]:
+    for max_depth in [5, 10, 15]:
+        for n_estimator in [10, 30, 50]:
+            clf = RandomForestClassifier(n_estimators=n_estimator, max_features=max_feature, max_depth=max_depth)
+            clf.fit(X_t, y_t)
+            conf = confusion_matrix(clf.predict(X_val), y_val, labels=class_labels)
+            fits += [({'max_features': max_feature, 'max_depth': max_depth, 'n_estimators': n_estimator}, sum(sum(np.multiply(conf, np.eye(n_classes)))) / sum(sum(conf)))]
 
-    # Generate a confusion matrix for the test data
-    conf = confusion_matrix(clf.predict(X[test_indexes]), y[test_indexes], labels=class_labels)
+print fits
+"""
 
-    # Compute accuracy, precision, and recall and append to respective lists
+# Initialize the classifier
+clf = RandomForestClassifier(n_estimators=50, max_features=500, max_depth=15)
 
-    accuracy = sum(sum(np.multiply(conf, np.eye(n_classes)))) / sum(sum(conf))
-    accuracyList += [accuracy]
+# Train the classifier on the preprocessed training data
+clf.fit(X_t, y_t)
 
-    precision = [conf[i, i] / sum(conf[:, i]) for i in range(0, n_classes)]
-    precisionList += [precision]
+# Make a confusion matrix
+conf = confusion_matrix(clf.predict(X_val), y_val, labels=class_labels)
 
-    recall = [conf[i, i] / sum(conf[i, :]) for i in range(0, n_classes)]
-    recallList += [recall]
+# Print Accuracy, precision, and recall
+print "average accuracy: %s"%(sum(sum(np.multiply(conf, np.eye(n_classes)))) / sum(sum(conf)))
+print "average precision: %s"%([conf[i, i] / sum(conf[:, i]) for i in range(0, n_classes)])
+print "average recall: %s"%([conf[i, i] / sum(conf[i, :]) for i in range(0, n_classes)])
 
-# Compute average accuracy, precision, and recall
-
-print "average accuracy:"
-print np.nanmean(accuracyList)
-
-print "average precision:"
-print np.nanmean(precisionList, axis=0)
-
-print "average recall:"
-print np.nanmean(recallList, axis=0)
-
-# TODO: set your best classifier below, then uncomment the following line to train it on ALL the data:
+# The best classifier was already selected but I stuck with your paradigm
 best_classifier = clf
-# best_classifier.fit(X,y)
+
+# Train the best classifier with all of the data, scaled
+best_classifier.fit(scaler.transform(X),y)
 
 classifier_filename='classifier.pickle'
 print("Saving best classifier to {}...".format(os.path.join(output_dir, classifier_filename)))
 with open(os.path.join(output_dir, classifier_filename), 'wb') as f: # 'wb' stands for 'write bytes'
     pickle.dump(best_classifier, f)
+
+# This serializes the scaler so it can be used in spealer-identification.py
+scaler_filename='scaler.pickle'
+print("Saving scaler to {}...".format(os.path.join(output_dir, classifier_filename)))
+with open(os.path.join(output_dir, scaler_filename), 'wb') as f: # 'wb' stands for 'write bytes'
+    pickle.dump(scaler, f)

@@ -65,9 +65,6 @@ def predict(window):
 
     # TODO: Extract features and predict class label
 
-    # The name of the pickle file with our trained classifier
-    classifier_filename = 'classifier.pickle'
-
     # You may need to reshape your feature vector into a 1 X d matrix as follows:
     # X = np.reshape(X,(1,-1))
 
@@ -83,13 +80,13 @@ def predict(window):
     # When you get a label, send it to the UI by calling onSpeakerDetected:
     # onSpeakerDetected(speaker)
 
-    # Load the pickle file
-    with open(os.path.join('training_output', classifier_filename), 'rb') as f:
-        # Initialize the classifier
-        clf = pickle.load(f)
+    # Load the pickle file of the scaler
+    with open(os.path.join(output_dir, 'scaler.pickle'), 'rb') as f:
+        # Initialize the scaler
+        scaler = pickle.load(f)
 
         # Send the prediction, the 0 index is because the prediction will be a vector
-        onSpeakerDetected(clf.predict(X)[0])
+        onSpeakerDetected(classifier.predict(scaler.transform(X))[0])
 
     return
 
