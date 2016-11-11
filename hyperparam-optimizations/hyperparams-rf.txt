@@ -1,0 +1,20 @@
+Loading data for aaron.
+Loaded 229 raw labelled audio data samples.
+Loading data for no.
+Loaded 87 raw labelled audio data samples.
+Loading data for todd.
+Loaded 113 raw labelled audio data samples.
+Loading data for dan.
+Loaded 371 raw labelled audio data samples.
+Loading data for todd.
+Loaded 38 raw labelled audio data samples.
+Loading data for aaron.
+Loaded 155 raw labelled audio data samples.
+Loading data for no.
+Loaded 263 raw labelled audio data samples.
+Found data for 4 speakers : aaron, no, todd, dan
+Extracting features and labels for 1256 audio windows...
+Finished feature extraction over 1256 windows
+Unique labels found: set([0.0, 1.0, 2.0, 3.0])
+[({'max_features': 100, 'n_estimators': 10, 'max_depth': 5}, 0.636144578313253), ({'max_features': 100, 'n_estimators': 30, 'max_depth': 5}, 0.67710843373493979), ({'max_features': 100, 'n_estimators': 50, 'max_depth': 5}, 0.67228915662650601), ({'max_features': 100, 'n_estimators': 10, 'max_depth': 10}, 0.58554216867469877), ({'max_features': 100, 'n_estimators': 30, 'max_depth': 10}, 0.65783132530120481), ({'max_features': 100, 'n_estimators': 50, 'max_depth': 10}, 0.68192771084337345), ({'max_features': 100, 'n_estimators': 10, 'max_depth': 15}, 0.58795180722891571), ({'max_features': 100, 'n_estimators': 30, 'max_depth': 15}, 0.66506024096385541), ({'max_features': 100, 'n_estimators': 50, 'max_depth': 15}, 0.68674698795180722), ({'max_features': 500, 'n_estimators': 10, 'max_depth': 5}, 0.66746987951807224), ({'max_features': 500, 'n_estimators': 30, 'max_depth': 5}, 0.67469879518072284), ({'max_features': 500, 'n_estimators': 50, 'max_depth': 5}, 0.68433734939759039), ({'max_features': 500, 'n_estimators': 10, 'max_depth': 10}, 0.66265060240963858), ({'max_features': 500, 'n_estimators': 30, 'max_depth': 10}, 0.67951807228915662), ({'max_features': 500, 'n_estimators': 50, 'max_depth': 10}, 0.69638554216867465), ({'max_features': 500, 'n_estimators': 10, 'max_depth': 15}, 0.67951807228915662), ({'max_features': 500, 'n_estimators': 30, 'max_depth': 15}, 0.68192771084337345), ({'max_features': 500, 'n_estimators': 50, 'max_depth': 15}, 0.7060240963855422), ({'max_features': 900, 'n_estimators': 10, 'max_depth': 5}, 0.67951807228915662), ({'max_features': 900, 'n_estimators': 30, 'max_depth': 5}, 0.68915662650602405), ({'max_features': 900, 'n_estimators': 50, 'max_depth': 5}, 0.68674698795180722), ({'max_features': 900, 'n_estimators': 10, 'max_depth': 10}, 0.66024096385542164), ({'max_features': 900, 'n_estimators': 30, 'max_depth': 10}, 0.69156626506024099), ({'max_features': 900, 'n_estimators': 50, 'max_depth': 10}, 0.69397590361445782), ({'max_features': 900, 'n_estimators': 10, 'max_depth': 15}, 0.66024096385542164), ({'max_features': 900, 'n_estimators': 30, 'max_depth': 15}, 0.67951807228915662), ({'max_features': 900, 'n_estimators': 50, 'max_depth': 15}, 0.6987951807228916)]
+Saving best classifier to training_output/classifier.pickle...
