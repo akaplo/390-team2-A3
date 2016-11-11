@@ -1,6 +1,12 @@
 # A3 Writeup
-## Team 2 - Aaron Kaplowitz, Todd Morse, Dan Snyder
+## Group #2 - Aaron Kaplowitz, Todd Morse, Dan Snyder
 
+### Teammate Contributions
+- Todd: the majority of the python and classifier stuff
+- Aaron: the majority of the app stuff
+- Dan: hopped around and filled in the cracks
+
+### Writeup Questions
 1. We each collected our data individually.  
 
   Aaron did his collection on his couch over the course of a few sessions, varying the noise in the room each time.  One was when he was home alone, thus the room was silent.  Another was when others were home having conversations in the background, and a third was the sound of others cooking in the background, along with the television being on.  He talked approximately 1-2 feet away from the microphone.
