@@ -11,6 +11,6 @@
 
 2. In addition to being used to find patterns in speech and infer habits over time (the example from the Background section), speaker analytics can also be used (with the addition of a properly trained classifier) to determine someone's current mood based on their speech.  This could then be applied to determining how people react to certain situations and stimuli.
 
-3. 
+3. Even assuming perfect speech-to-text, the algorithm would still only be considering a few words or sentences.  We'd lose an enormous amount of context; perhaps if the window was over an essay's worth of speech, the recognition would work a little better.  The question also essentially describes a "bag of words" representation, so the algorithm would have no awareness of word order.
 
 4. Yes, thanks Erik!
